@@ -42,6 +42,7 @@ RUN cd ui-tui && npm run build
 
 # ---------- 源码 ----------
 COPY --link --chmod=a+rX,go-w . .
+COPY --chmod=0755 mcp-servers/tdengine/mcp-tdengine-tsdb /opt/hermes/mcp-servers/tdengine/mcp-tdengine-tsdb
 
 # ---------- editable install ----------
 RUN uv pip install --no-cache-dir --no-deps -e "."
@@ -68,6 +69,14 @@ RUN mkdir -p /etc/cont-init.d && \
     chmod +x /etc/cont-init.d/01-hermes-setup
 COPY --chmod=0755 docker/cont-init.d/015-supervise-perms /etc/cont-init.d/015-supervise-perms
 COPY --chmod=0755 docker/cont-init.d/02-reconcile-profiles /etc/cont-init.d/02-reconcile-profiles
+
+RUN chmod 0755 /opt/hermes/docker/stage2-hook.sh \
+               /opt/hermes/docker/main-wrapper.sh \
+               /opt/hermes/docker/entrypoint.sh \
+               /opt/hermes/docker/hermes-exec-shim.sh \
+               /etc/s6-overlay/s6-rc.d/main-hermes/run \
+               /etc/s6-overlay/s6-rc.d/dashboard/run \
+               /etc/s6-overlay/s6-rc.d/dashboard/finish
 
 # ---------- Runtime ENV ----------
 ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
