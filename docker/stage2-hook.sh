@@ -389,6 +389,7 @@ seed_one() {
 seed_one ".env" ".env.example"
 seed_one "config.yaml" "cli-config.yaml.example"
 seed_one "SOUL.md" "docker/SOUL.md"
+seed_one "mcp-tdengine-tsdb" "mcp-servers/tdengine/mcp-tdengine-tsdb"
 
 # .env holds API keys and secrets — restrict to owner-only access. Applied
 # unconditionally (not only on first-seed) so a host-mounted .env that was

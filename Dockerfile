@@ -200,7 +200,8 @@ RUN cd web && npm run build && \
 # gives the non-root hermes user read + traverse but no write; root retains
 # write so the build steps below don't need chmod u+w dances.
 COPY --link --chmod=a+rX,go-w . .
-
+# TDengine MCP server binary — seeded into /opt/data on first boot by stage2-hook.sh
+COPY --chmod=0755 mcp-servers/tdengine/mcp-tdengine-tsdb /opt/hermes/mcp-servers/tdengine/mcp-tdengine-tsdb
 # ---------- Permissions ----------
 # Link hermes-agent itself (editable). Deps are already installed in the
 # cached layer above; `--no-deps` makes this a fast egg-link creation with no
