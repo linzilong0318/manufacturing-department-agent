@@ -266,6 +266,9 @@ youtube = [
   # at first invocation with ModuleNotFoundError (issue #22243).
   "youtube-transcript-api==1.2.4",
 ]
+# Nacos service discovery — fork-specific, for Docker container Nacos registration
+# daemon. Pinned to 1.0.0 per verified working setup.
+nacos = ["nacos-sdk-python==1.0.0"]
 # `hermes dashboard` (localhost SPA + API).  Not in core to keep the default install lean.
 # starlette==1.0.1 pinned for CVE-2026-48710 (BadHost) — fastapi pulls Starlette
 # transitively and pre-1.0.1 is the vulnerable range. See the mcp extra above.

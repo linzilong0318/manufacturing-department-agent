@@ -31,7 +31,7 @@ RUN --mount=type=cache,target=/root/.npm \
 COPY pyproject.toml uv.lock ./
 RUN touch ./README.md
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-install-project --extra all
+    uv sync --frozen --no-install-project --extra all --extra nacos
 
 # ---------- 前端构建 ----------
 COPY web/ web/
@@ -74,9 +74,12 @@ RUN chmod 0755 /opt/hermes/docker/stage2-hook.sh \
                /opt/hermes/docker/main-wrapper.sh \
                /opt/hermes/docker/entrypoint.sh \
                /opt/hermes/docker/hermes-exec-shim.sh \
+               /opt/hermes/docker/nacos_daemon.py \
                /etc/s6-overlay/s6-rc.d/main-hermes/run \
                /etc/s6-overlay/s6-rc.d/dashboard/run \
-               /etc/s6-overlay/s6-rc.d/dashboard/finish
+               /etc/s6-overlay/s6-rc.d/dashboard/finish \
+               /etc/s6-overlay/s6-rc.d/nacos-registrar/run \
+               /etc/s6-overlay/s6-rc.d/nacos-registrar/finish
 
 # ---------- Runtime ENV ----------
 ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist

@@ -1,0 +1,27 @@
+#!/command/with-contenv sh
+# shellcheck shell=sh
+# Nacos registrar service. Always declared so s6 has a supervised slot; if
+# NACOS_SERVER_ADDRESSES isn't set the run script exits cleanly and the
+# companion finish script returns 125 (s6's "permanent failure, do not
+# restart" marker), so s6-svstat reports the slot as down. See also
+# docker/s6-rc.d/nacos-registrar/finish.
+
+case "${NACOS_SERVER_ADDRESSES:-}" in
+    "")
+        # Exit 0; the finish script will exit 125 → s6-supervise won't
+        # restart us and the slot reports down.
+        exit 0
+        ;;
+esac
+
+# with-contenv repopulates HOME from /init as /root. Reset it before
+# dropping privileges so HOME-anchored state lands under /opt/data.
+export HOME=/opt/data
+
+cd /opt/data
+# shellcheck disable=SC1091
+. /opt/hermes/.venv/bin/activate
+
+# Skip the drop when already non-root.
+[ "$(id -u)" = 0 ] || exec python /opt/hermes/docker/nacos_daemon.py
+exec s6-setuidgid hermes python /opt/hermes/docker/nacos_daemon.py
