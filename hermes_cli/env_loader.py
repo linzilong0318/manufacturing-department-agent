@@ -243,9 +243,28 @@ def load_hermes_dotenv(
         loaded.append(project_env_path)
 
     _apply_external_secret_sources(home_path)
+    _apply_nacos_config(home_path)
     _apply_managed_env()
 
     return loaded
+
+
+def _apply_nacos_config(home_path: Path) -> None:
+    """Pull env vars from the Nacos config center into os.environ and the .env.
+
+    Runs after dotenv + external secret sources and before managed scope, so
+    administrator-pinned managed keys still beat Nacos values.  Fail-open: any
+    error here is logged and swallowed — the config center must never block
+    startup.
+    """
+    try:
+        from hermes_cli import nacos_env
+    except ImportError:
+        return
+    try:
+        nacos_env.apply_nacos_config(home_path)
+    except Exception:  # noqa: BLE001 — nacos config must never block startup
+        pass
 
 
 def _apply_managed_env() -> None:
