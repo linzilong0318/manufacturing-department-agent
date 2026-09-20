@@ -286,8 +286,15 @@ def _fetch_config_text(cfg: _ConfigSource) -> str | None:
         username=cfg.username,
         password=cfg.password,
     )
+    # no_snapshot=True：SDK 默认把快照写到 CWD 相对路径 nacos-data/snapshot，
+    # 容器内网关进程的 CWD（/opt/hermes）为 0555 只读，makedirs 静默失败后
+    # open 报 FileNotFoundError（SDK 会打出误导性的 "dir is already exist"）。
+    # 本模块已通过 write_to_env_file 自行持久化到 .env，无需 SDK 快照。
     return client.get_config(
-        data_id=cfg.data_id, group=cfg.group, timeout=cfg.timeout_ms
+        data_id=cfg.data_id,
+        group=cfg.group,
+        timeout=cfg.timeout_ms,
+        no_snapshot=True,
     )
 
 
